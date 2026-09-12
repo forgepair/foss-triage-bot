@@ -1,8 +1,8 @@
 // Core triage mechanism: classify an incoming vulnerability report against
 // a project's own documented defensive patterns.
 //
-// Design constraint (deliberate, not an afterthought -- see BRIEF.md's
-// "Known open items"): a false auto-reject of a real vulnerability is worse
+// Design constraint (deliberate, not an afterthought): a false auto-reject
+// of a real vulnerability is worse
 // than doing nothing. The prompt is built to fail toward "needs human
 // review" -- "likely-junk" requires the report to describe a scenario a
 // named pattern demonstrably already prevents, not just resemble one.
