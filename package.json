@@ -1,0 +1,10 @@
+{
+  "name": "foss-triage-bot",
+  "version": "0.1.0",
+  "description": "Free, self-hostable AI triage for FOSS security reports -- screens incoming reports against a project's own documented defensive patterns before a maintainer has to",
+  "type": "module",
+  "scripts": {
+    "eval": "node eval/run-eval.mjs"
+  },
+  "license": "MIT"
+}

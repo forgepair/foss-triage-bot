@@ -1,0 +1,35 @@
+{
+  "project": "curl/curl",
+  "patterns": [
+    {
+      "id": "ntlm-bufsize",
+      "name": "NTLM_BUFSIZE bound",
+      "description": "The NTLM type-3 message buffer (ntlmbuf) is a fixed-size stack array (NTLM_BUFSIZE = 1024 bytes) in lib/vauth/ntlm.c. All writes into it go through curl_msnprintf (bounded) or explicit size checks (e.g. `if (size < (NTLM_BUFSIZE - 0x18))`) before appending hashes. A report claiming an unbounded/overflowing write into this buffer without identifying a specific code path that bypasses those checks is describing an already-mitigated pattern.",
+      "source": "lib/vauth/ntlm.c, verified directly 2026-09-12"
+    },
+    {
+      "id": "cookie-line-bound",
+      "name": "MAX_COOKIE_LINE bound",
+      "description": "lib/cookie.c discards any cookie-file line longer than MAX_COOKIE_LINE before parsing (`if (linelength > MAX_COOKIE_LINE) return CURLE_OK;`), and uses a bounded dynbuf (curlx_dyn_init(&buf, MAX_COOKIE_LINE)) to read lines. A report claiming an overly long cookie line causes unbounded memory growth or a buffer overrun during cookie-file parsing is describing an already-mitigated pattern.",
+      "source": "lib/cookie.c, verified directly 2026-09-12"
+    },
+    {
+      "id": "cookie-send-amount-bound",
+      "name": "MAX_COOKIE_SEND_AMOUNT bound",
+      "description": "lib/cookie.c caps the number of cookies attached to an outgoing request at MAX_COOKIE_SEND_AMOUNT, logging and stopping once the cap is hit (`if (matches >= MAX_COOKIE_SEND_AMOUNT)`). A report claiming unbounded cookie accumulation/amplification in an outgoing request is describing an already-mitigated pattern.",
+      "source": "lib/cookie.c, verified directly 2026-09-12"
+    },
+    {
+      "id": "dynbuf-bounded-growth",
+      "name": "dynbuf bounded growth",
+      "description": "curl's dynamic buffer module (dynbuf, used throughout lib/ including cookie-line parsing) is initialized with an explicit maximum size per call site and refuses to grow past it. A report describing unbounded growth of a curl-internal dynamic buffer, without identifying a call site that omits or mis-sets that maximum, is describing an already-mitigated pattern.",
+      "source": "referenced in curl/curl PR #20312 comment thread (mithr4ndir, 2026-01-24) and confirmed by dynbuf usage in lib/cookie.c, 2026-09-12"
+    },
+    {
+      "id": "redirect-protocol-allowlist",
+      "name": "Redirect protocol allow-list",
+      "description": "curl restricts which protocols a redirect (Location: header, CURLOPT_FOLLOWLOCATION) is allowed to switch to, distinct from the protocol allow-list applied to the original URL (CURLOPT_PROTOCOLS_STR / CURLOPT_REDIR_PROTOCOLS_STR). By default this is a restricted set, not 'anything the original request also allowed' -- so a redirect-based protocol-downgrade or protocol-switch attack (e.g. HTTP redirecting to file:// or scp://) is already constrained unless the caller explicitly widened the allow-list. A report describing an unrestricted protocol-switch-on-redirect, without identifying that the caller explicitly set a wider CURLOPT_REDIR_PROTOCOLS_STR value, is describing an already-mitigated pattern.",
+      "source": "docs/libcurl/opts/CURLOPT_REDIR_PROTOCOLS_STR.md, verified directly 2026-09-12"
+    }
+  ]
+}

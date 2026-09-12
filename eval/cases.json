@@ -1,0 +1,162 @@
+[
+  {
+    "id": "junk-ntlm-formal",
+    "kind": "junk",
+    "report": "Security Advisory: A stack-based buffer overflow exists in curl's NTLM Type-3 message construction (lib/vauth/ntlm.c). The fixed-size ntlmbuf array can be overflowed by supplying an oversized username, domain, or hostname, leading to potential remote code execution. CVSS 9.8 (Critical).",
+    "expected_verdict": "likely-junk",
+    "expected_pattern": "ntlm-bufsize",
+    "why_this_case": "Formal advisory/CVSS-score style, the most common AI-slop presentation -- confident and well-formatted, no actual bypass identified."
+  },
+  {
+    "id": "junk-ntlm-informal",
+    "kind": "junk",
+    "report": "yo i think theres a heap overflow in the ntlm auth stuff, that buffer for the response message doesnt look like its checked anywhere before writing user/domain data into it, could prob crash the process or worse",
+    "expected_verdict": "likely-junk",
+    "expected_pattern": "ntlm-bufsize",
+    "why_this_case": "Same underlying (false) claim in casual, low-effort phrasing -- tests the tool isn't just pattern-matching on formal advisory language."
+  },
+  {
+    "id": "junk-cookie-send-cve-style",
+    "kind": "junk",
+    "report": "CVE-2026-XXXXX (reserved): curl's cookie engine does not limit the number of cookies attached to an outbound request. A malicious cookie jar or server-set cookie chain can cause unbounded request growth, a denial-of-service vector against downstream servers.",
+    "expected_verdict": "likely-junk",
+    "expected_pattern": "cookie-send-amount-bound",
+    "why_this_case": "Fake self-assigned CVE number, a very common real-world AI-slop tell -- tests the tool evaluates the claim, not the formatting."
+  },
+  {
+    "id": "junk-cookie-send-informal",
+    "kind": "junk",
+    "report": "found that curl sends literally every matching cookie back to the server no matter how many there are, seems like an easy amplification bug",
+    "expected_verdict": "likely-junk",
+    "expected_pattern": "cookie-send-amount-bound",
+    "why_this_case": "Same false claim, terse phrasing."
+  },
+  {
+    "id": "junk-cookie-line-translated-style",
+    "kind": "junk",
+    "report": "When curl reads the cookie jar file, if one line is made very very long by attacker, program need read whole line into memory before check it, this can use all memory of system and crash. No limit found in code for line length.",
+    "expected_verdict": "likely-junk",
+    "expected_pattern": "cookie-line-bound",
+    "why_this_case": "Non-native-English phrasing, matching the addendum's real observation that some genuine junk reports in this category arrive in imperfect English -- tests robustness to phrasing, not just polish."
+  },
+  {
+    "id": "junk-cookie-line-report-style",
+    "kind": "junk",
+    "report": "Vulnerability Report\\n\\nComponent: lib/cookie.c\\nIssue: Unbounded memory allocation during cookie file parsing\\nDetail: The cookie-jar line reader has no maximum line length, allowing an attacker-controlled cookie file to exhaust available memory.\\nImpact: Denial of Service\\nSeverity: High",
+    "expected_verdict": "likely-junk",
+    "expected_pattern": "cookie-line-bound",
+    "why_this_case": "Structured 'professional pentest report' template -- another very common real AI-slop presentation shape."
+  },
+  {
+    "id": "junk-dynbuf-generic",
+    "kind": "junk",
+    "report": "curl's internal dynamic string/buffer type (dynbuf) grows without any upper bound depending on attacker-supplied input, which could be used to exhaust memory on a target host running curl-based tooling.",
+    "expected_verdict": "likely-junk",
+    "expected_pattern": "dynbuf-bounded-growth",
+    "why_this_case": "Generic unbounded-growth claim against dynbuf, which is in fact bounded per call site -- no specific call site identified."
+  },
+  {
+    "id": "junk-redirect-protocol-generic",
+    "kind": "junk",
+    "report": "If a curl request follows an HTTP redirect (-L / CURLOPT_FOLLOWLOCATION), it will happily switch to any protocol the redirect target specifies, including file:// -- allowing an attacker-controlled server to trick curl into reading local files via a crafted redirect.",
+    "expected_verdict": "likely-junk",
+    "expected_pattern": "redirect-protocol-allowlist",
+    "why_this_case": "Describes exactly the protocol-switch-on-redirect scenario the default restricted allow-list already prevents, with no mention of the caller having widened it."
+  },
+  {
+    "id": "junk-redirect-protocol-cve-style",
+    "kind": "junk",
+    "report": "Critical: SSRF/LFI via curl redirect protocol confusion. curl does not restrict which protocol scheme a Location: header redirect can target, enabling protocol-switch attacks (e.g. http:// to file://) when following redirects from an untrusted server.",
+    "expected_verdict": "likely-junk",
+    "expected_pattern": "redirect-protocol-allowlist",
+    "why_this_case": "Same false claim, formal severity-labeled style."
+  },
+  {
+    "id": "junk-multi-pattern-bundle",
+    "kind": "junk",
+    "report": "Full audit findings: (1) NTLM buffer overflow via long username in lib/vauth/ntlm.c, no length check present. (2) Cookie jar parser allows arbitrarily long lines causing memory exhaustion. Both should be treated as critical.",
+    "expected_verdict": "likely-junk",
+    "expected_pattern": "ntlm-bufsize",
+    "why_this_case": "Bundles two already-mitigated claims together (common in bulk AI-generated 'audits') -- both parts are individually junk, so the whole report should be, unlike the mixed-real case below."
+  },
+  {
+    "id": "control-tls-unrelated",
+    "kind": "calibration_control",
+    "report": "curl's TLS backend selection logic (when built against multiple TLS libraries simultaneously via --with-openssl and --with-gnutls in the same build) appears to allow a build-time misconfiguration where certificate verification silently falls back to a backend that wasn't the one the caller configured via CURLOPT_SSLBACKEND. I can reproduce this on a specific custom build configuration.",
+    "expected_verdict": "needs-human-review",
+    "expected_pattern": null,
+    "why_this_case": "Real, specific, plausible report about TLS backend selection -- an area none of the five named patterns cover. Must not be flagged."
+  },
+  {
+    "id": "control-url-parsing-unrelated",
+    "kind": "calibration_control",
+    "report": "curl's URL parser appears to normalize percent-encoded path segments differently depending on whether CURLOPT_PATH_AS_IS is set, and under a specific combination with a URL containing both encoded and literal '..' segments, the resulting request path differs from what curl_url_get() reports back to the caller -- a caller relying on curl_url_get() for a security decision would be checking a different path than what's actually requested.",
+    "expected_verdict": "needs-human-review",
+    "expected_pattern": null,
+    "why_this_case": "Specific, plausible, and about URL/path parsing, which none of the five patterns address. Must not be flagged."
+  },
+  {
+    "id": "control-auth-unrelated",
+    "kind": "calibration_control",
+    "report": "When curl is configured with --negotiate against a server that downgrades to NTLM mid-handshake, I believe the negotiated security layer strength isn't re-checked before the connection is reused for a subsequent request on the same handle, potentially reusing a weaker-than-intended authenticated channel.",
+    "expected_verdict": "needs-human-review",
+    "expected_pattern": null,
+    "why_this_case": "About auth mechanism negotiation/downgrade and connection reuse, not covered by the NTLM buffer-size pattern or any other named pattern. Must not be flagged."
+  },
+  {
+    "id": "control-real-bypass-ntlm",
+    "kind": "calibration_control",
+    "report": "In lib/vauth/ntlm.c's type-3 message builder, if useroff + userlen overflows a 32-bit unsigned int on a platform where unsigned int is 32-bit but size_t is 64-bit, the subsequent curl_msnprintf(...,NTLM_BUFSIZE,...) bound check could be computed against a wrapped, too-small offset, potentially writing past the intended region before the size check catches it. I haven't built a working exploit yet but the integer-overflow path looks real.",
+    "expected_verdict": "needs-human-review",
+    "expected_pattern": null,
+    "why_this_case": "Names the exact pattern (NTLM_BUFSIZE) but identifies a specific bypass condition rather than a generic overflow claim."
+  },
+  {
+    "id": "control-real-bypass-cookie",
+    "kind": "calibration_control",
+    "report": "MAX_COOKIE_SEND_AMOUNT caps how many cookies are attached, but I think the check happens per curl_easy_perform() call, not per redirect hop within the same handle -- so a request that follows N redirects, each to a domain matching different cookies, could still send close to MAX_COOKIE_SEND_AMOUNT cookies at each hop, for a cumulative total well above the intended per-request cap across the whole redirect chain. Haven't confirmed this against the actual redirect-following code path yet.",
+    "expected_verdict": "needs-human-review",
+    "expected_pattern": null,
+    "why_this_case": "Names the exact pattern (MAX_COOKIE_SEND_AMOUNT) and identifies a specific scope-of-enforcement question (per-hop vs per-chain) rather than just claiming the cap doesn't exist."
+  },
+  {
+    "id": "control-real-bypass-redirect",
+    "kind": "calibration_control",
+    "report": "CURLOPT_REDIR_PROTOCOLS_STR restricts redirect targets, but if an application explicitly sets it to a wide value (e.g. 'ALL') for legitimate reasons elsewhere in its config and doesn't realize that also applies to redirects triggered by a completely different, security-sensitive code path in the same process, that's a real footgun even though curl's own default is safe. Not a curl bug exactly, but worth a maintainer's eyes on whether the docs warn about this clearly enough.",
+    "expected_verdict": "needs-human-review",
+    "expected_pattern": null,
+    "why_this_case": "Doesn't claim the pattern is broken, but raises a real documentation/footgun concern adjacent to it -- not a clean 'this pattern already prevents it' case, so it should go to a human rather than be auto-rejected as junk."
+  },
+  {
+    "id": "control-vague-cookie",
+    "kind": "calibration_control",
+    "report": "curl might have a memory issue related to how it handles cookies, could be exploitable.",
+    "expected_verdict": "needs-human-review",
+    "expected_pattern": null,
+    "why_this_case": "Low-effort and vague -- tempting to reject on vibes, but too unspecific to match a documented pattern, so it must go to a human."
+  },
+  {
+    "id": "control-vague-general",
+    "kind": "calibration_control",
+    "report": "I ran a fuzzer against curl for a few hours and got a crash. Haven't minimized the input yet or figured out which code path it's in. Will follow up with more detail once I isolate it.",
+    "expected_verdict": "needs-human-review",
+    "expected_pattern": null,
+    "why_this_case": "A real, common, legitimate-but-incomplete report shape (early fuzzing crash, no root cause yet) -- has zero markers of AI-slop confidence but also doesn't cite anything specific. Must not be flagged just for being underspecified."
+  },
+  {
+    "id": "control-adversarial-quotes-mitigation",
+    "kind": "calibration_control",
+    "report": "I'm aware NTLM_BUFSIZE bounds the type-3 buffer and curl_msnprintf enforces that bound correctly in the normal path -- that part is solid. The actual issue I'm reporting is in the earlier NTLM type-2 message parsing (Curl_auth_decode_ntlm_type2_message), where the target-info block length field from the server is trusted to size a subsequent allocation without validating it against the actual remaining bytes in the decoded message, which is a completely different code path than the buffer this project already documents as bounded.",
+    "expected_verdict": "needs-human-review",
+    "expected_pattern": null,
+    "why_this_case": "Explicitly acknowledges the documented pattern is fine and points at a different, specific code path instead -- an adversarial-shaped case testing that citing the pattern's own language doesn't get a report auto-approved as junk just for sounding informed about it."
+  },
+  {
+    "id": "control-mixed-junk-and-real",
+    "kind": "calibration_control",
+    "report": "Two things I noticed: (1) the NTLM buffer in ntlm.c seems unbounded and could overflow with a long username -- possibly critical. (2) separately, I noticed curl's redirect handling calls curl_easy_setopt(CURLOPT_REDIR_PROTOCOLS_STR, ...) with a value built from a runtime config file in some embedding examples, and if that config file is world-writable (as it is in a default install of at least one downstream package I checked), a local attacker could widen the redirect allow-list for a process they don't otherwise control -- that part isn't about curl's own defaults, but about how a specific downstream packaging exposes the option.",
+    "expected_verdict": "needs-human-review",
+    "expected_pattern": null,
+    "why_this_case": "Bundles one already-mitigated claim (NTLM overflow) with one genuinely novel, specific, plausible concern (downstream packaging exposing a security-relevant option via a world-writable config). The presence of one real thread means the whole report needs a human, even though part of it is junk on its own -- tests that the tool doesn't average the two parts into a false 'likely-junk'."
+  }
+]
