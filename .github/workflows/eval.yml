@@ -1,0 +1,27 @@
+name: eval
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    # Secrets are not exposed to pull_request runs triggered from forks, so
+    # this job will fail closed (missing ANTHROPIC_API_KEY) on external PRs
+    # rather than spend against this repo's key. See src/triage.mjs's
+    # resolveApiKey() and eval/run-eval.mjs's early exit for that path.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - run: npm run eval -- cases.json
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - run: npm run eval -- cases-set2.json
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
